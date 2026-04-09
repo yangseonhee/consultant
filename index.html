@@ -28,69 +28,75 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        // 아이콘 로딩 문제를 해결하기 위한 자체 SVG 아이콘 컴포넌트
+        // 아이콘 컴포넌트 (SVG 내장)
         const Icon = ({ name, size = 20, className = "" }) => {
             const icons = {
                 printer: <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" />,
                 "plus-circle": (
-                    <>
+                    <React.Fragment>
                         <circle cx="12" cy="12" r="10" />
                         <line x1="12" y1="8" x2="12" y2="16" />
                         <line x1="8" y1="12" x2="16" y2="12" />
-                    </>
+                    </React.Fragment>
+                ),
+                edit: (
+                    <React.Fragment>
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </React.Fragment>
                 ),
                 settings: (
-                    <>
+                    <React.Fragment>
                         <circle cx="12" cy="12" r="3" />
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                    </>
+                    </React.Fragment>
                 ),
                 school: (
-                    <>
+                    <React.Fragment>
                         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                         <polyline points="9 22 9 12 15 12 15 22" />
-                    </>
+                    </React.Fragment>
                 ),
                 search: (
-                    <>
+                    <React.Fragment>
                         <circle cx="11" cy="11" r="8" />
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </>
+                    </React.Fragment>
                 ),
                 "trash-2": (
-                    <>
+                    <React.Fragment>
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                         <line x1="10" y1="11" x2="10" y2="17" />
                         <line x1="14" y1="11" x2="14" y2="17" />
-                    </>
+                    </React.Fragment>
                 ),
                 menu: (
-                    <>
+                    <React.Fragment>
                         <line x1="3" y1="12" x2="21" y2="12" />
                         <line x1="3" y1="6" x2="21" y2="6" />
                         <line x1="3" y1="18" x2="21" y2="18" />
-                    </>
+                    </React.Fragment>
                 ),
                 x: (
-                    <>
+                    <React.Fragment>
                         <line x1="18" y1="6" x2="6" y2="18" />
                         <line x1="6" y1="6" x2="18" y2="18" />
-                    </>
+                    </React.Fragment>
                 ),
                 "file-down": (
-                    <>
+                    <React.Fragment>
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                         <polyline points="7 10 12 15 17 10" />
                         <line x1="12" y1="15" x2="12" y2="3" />
-                    </>
+                    </React.Fragment>
                 ),
                 save: (
-                    <>
+                    <React.Fragment>
                         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                         <polyline points="17 21 17 13 7 13 7 21" />
                         <polyline points="7 3 7 8 15 8" />
-                    </>
+                    </React.Fragment>
                 )
             };
             return (
@@ -105,6 +111,7 @@
             const [view, setView] = useState('list');
             const [schoolName, setSchoolName] = useState('순천부영초등학교');
             const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+            const [editingId, setEditingId] = useState(null);
             const [formData, setFormData] = useState({
                 date: new Date().toISOString().split('T')[0],
                 gradeClass: '',
@@ -128,7 +135,7 @@
             const handleSchoolNameSave = (e) => {
                 e.preventDefault();
                 localStorage.setItem('school_name', schoolName);
-                alert('학교 이름이 저장되었습니다.');
+                alert('명칭이 저장되었습니다.');
                 setView('list');
             };
 
@@ -138,11 +145,23 @@
                     alert('이름과 상담 내용을 입력해주세요.');
                     return;
                 }
-                const newLog = { ...formData, id: Date.now() };
-                const updatedLogs = [newLog, ...logs];
+
+                let updatedLogs;
+                if (editingId) {
+                    updatedLogs = logs.map(log => 
+                        log.id === editingId ? { ...formData, id: editingId } : log
+                    );
+                    alert('상담 내역이 수정되었습니다.');
+                } else {
+                    const newLog = { ...formData, id: Date.now() };
+                    updatedLogs = [newLog, ...logs];
+                }
+
                 setLogs(updatedLogs);
                 localStorage.setItem('nutrition_logs', JSON.stringify(updatedLogs));
+                
                 setFormData({ date: new Date().toISOString().split('T')[0], gradeClass: '', name: '', content: '' });
+                setEditingId(null);
                 setView('list');
                 setIsSidebarOpen(false);
             };
@@ -153,6 +172,21 @@
                     setLogs(updatedLogs);
                     localStorage.setItem('nutrition_logs', JSON.stringify(updatedLogs));
                 }
+            };
+
+            const startEdit = (log) => {
+                setFormData({
+                    date: log.date,
+                    gradeClass: log.gradeClass,
+                    name: log.name,
+                    content: log.content
+                });
+                setEditingId(log.id);
+                setView('add');
+            };
+
+            const handlePrint = () => {
+                window.print();
             };
 
             const exportToCSV = () => {
@@ -205,8 +239,8 @@
                         </div>
 
                         <ul className="flex flex-col gap-3 mt-4 md:mt-0">
-                            <NavItem active={view === 'list'} onClick={() => {setView('list'); setIsSidebarOpen(false);}} icon="printer" label="상담일지 인쇄" />
-                            <NavItem active={view === 'add'} onClick={() => {setView('add'); setIsSidebarOpen(false);}} icon="plus-circle" label="신규 상담 기록" />
+                            <NavItem active={view === 'list'} onClick={() => {setView('list'); setEditingId(null); setIsSidebarOpen(false);}} icon="printer" label="상담일지 인쇄" />
+                            <NavItem active={view === 'add'} onClick={() => {setView('add'); setEditingId(null); setFormData({date: new Date().toISOString().split('T')[0], gradeClass: '', name: '', content: ''}); setIsSidebarOpen(false);}} icon="plus-circle" label="신규 상담 기록" />
                             <NavItem active={view === 'settings'} onClick={() => {setView('settings'); setIsSidebarOpen(false);}} icon="settings" label="명칭 및 환경 설정" />
                         </ul>
 
@@ -230,15 +264,27 @@
                         {view === 'list' && (
                             <div className="max-w-6xl mx-auto space-y-6">
                                 <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 no-print">
-                                    <div><h2 className="text-3xl font-black text-slate-800 tracking-tight">상담일지 관리</h2><p className="text-slate-500 text-sm mt-1">{schoolName} 상담 현황</p></div>
+                                    <div>
+                                        <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2">상담일지 관리</h2>
+                                        <p className="text-slate-500 text-sm mt-1">{schoolName} 식생활교육관 상담 현황</p>
+                                    </div>
                                     <div className="flex flex-wrap gap-2">
                                         <div className="relative flex-1 min-w-[200px]">
                                             <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                            <input type="text" placeholder="이름, 학급 검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-11 pr-4 py-3 border border-slate-200 rounded-2xl w-full focus:ring-4 focus:ring-emerald-500/10 outline-none shadow-sm" />
+                                            <input 
+                                                type="text" 
+                                                placeholder="이름, 학급 검색..." 
+                                                value={searchTerm} 
+                                                onChange={(e) => setSearchTerm(e.target.value)} 
+                                                className="pl-11 pr-4 py-3 border border-slate-200 rounded-2xl w-full focus:ring-4 focus:ring-emerald-500/10 outline-none shadow-sm transition-all" 
+                                            />
                                         </div>
-                                        <button onClick={() => window.print()} className="bg-slate-900 text-white px-6 py-3 rounded-2xl flex items-center gap-2 hover:bg-black font-bold shadow-lg transition-all"><Icon name="printer" size={18} /> 서류 인쇄</button>
+                                        <button onClick={handlePrint} className="bg-slate-900 text-white px-6 py-3 rounded-2xl flex items-center gap-2 hover:bg-black font-bold shadow-lg transition-all">
+                                            <Icon name="printer" size={18} /> 서류 인쇄하기
+                                        </button>
                                     </div>
                                 </header>
+
                                 <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left">
@@ -248,21 +294,38 @@
                                                     <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">대상학급</th>
                                                     <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">성명</th>
                                                     <th className="p-5 font-bold text-slate-500 text-xs uppercase">상담 및 지도 내용</th>
-                                                    <th className="p-5 text-center w-16 no-print"></th>
+                                                    <th className="p-5 text-center w-28 no-print">관리</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-slate-50">
                                                 {filteredLogs.map(log => (
-                                                    <tr key={log.id} className="hover:bg-emerald-50/20 transition-colors group">
-                                                        <td className="p-5 text-sm text-slate-500 align-top text-center">{log.date}</td>
+                                                    <tr key={log.id} className="hover:bg-emerald-50/20 transition-colors">
+                                                        <td className="p-5 text-sm text-slate-500 align-top text-center whitespace-nowrap">{log.date}</td>
                                                         <td className="p-5 text-sm font-semibold text-slate-700 align-top text-center">{log.gradeClass}</td>
                                                         <td className="p-5 text-sm font-black text-emerald-700 align-top text-center">{log.name}</td>
                                                         <td className="p-5 text-sm text-slate-600 align-top whitespace-pre-wrap leading-relaxed">{log.content}</td>
                                                         <td className="p-5 text-center align-top no-print">
-                                                            <button onClick={() => deleteLog(log.id)} className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all"><Icon name="trash-2" size={18} /></button>
+                                                            <div className="flex justify-center gap-2">
+                                                                <button onClick={() => startEdit(log)} className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-xl bg-blue-50/50" title="수정">
+                                                                    <Icon name="edit" size={18} />
+                                                                </button>
+                                                                <button onClick={() => deleteLog(log.id)} className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl bg-red-50/50" title="삭제">
+                                                                    <Icon name="trash-2" size={18} />
+                                                                </button>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))}
+                                                {filteredLogs.length === 0 && (
+                                                    <tr>
+                                                        <td colSpan="5" className="p-24 text-center">
+                                                            <div className="flex flex-col items-center gap-4 text-slate-300">
+                                                                <Icon name="search" size={48} className="opacity-20" />
+                                                                <p className="text-lg font-medium italic">등록된 기록이 없습니다.</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
                                             </tbody>
                                         </table>
                                     </div>
@@ -273,22 +336,50 @@
                         {view === 'add' && (
                             <div className="max-w-3xl mx-auto no-print">
                                 <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-full h-2 bg-emerald-600"></div>
+                                    <div className={`absolute top-0 left-0 w-full h-2 ${editingId ? 'bg-blue-500' : 'bg-emerald-600'}`}></div>
                                     <div className="mb-10 text-center">
-                                        <div className="inline-flex p-4 bg-emerald-100 text-emerald-700 rounded-2xl mb-4"><Icon name="plus-circle" size={32} /></div>
-                                        <h2 className="text-3xl font-black text-slate-800 tracking-tight">상담 기록 등록</h2>
+                                        <div className={`inline-flex p-4 ${editingId ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'} rounded-2xl mb-4`}>
+                                            <Icon name={editingId ? "edit" : "plus-circle"} size={32} />
+                                        </div>
+                                        <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+                                            {editingId ? '상담 기록 수정' : '상담 기록 등록'}
+                                        </h2>
                                         <p className="text-slate-500 mt-2 font-medium">{schoolName} 식생활교육관</p>
                                     </div>
                                     <form onSubmit={handleSubmit} className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2"><label className="text-xs font-black text-slate-400 ml-1">상담 일자</label><input type="date" name="date" value={formData.date} onChange={handleInputChange} className="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold focus:ring-2 focus:ring-emerald-500" /></div>
-                                            <div className="space-y-2"><label className="text-xs font-black text-slate-400 ml-1">학년 / 반</label><input type="text" name="gradeClass" value={formData.gradeClass} onChange={handleInputChange} placeholder="예: 6학년 1반" className="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold focus:ring-2 focus:ring-emerald-500" /></div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-slate-400 ml-1">상담 일자</label>
+                                                <input type="date" name="date" value={formData.date} onChange={handleInputChange} className="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold focus:ring-2 focus:ring-emerald-500" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-slate-400 ml-1">학년 / 반</label>
+                                                <input type="text" name="gradeClass" value={formData.gradeClass} onChange={handleInputChange} placeholder="예: 6학년 1반" className="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold focus:ring-2 focus:ring-emerald-500" />
+                                            </div>
                                         </div>
-                                        <div className="space-y-2"><label className="text-xs font-black text-slate-400 ml-1">학생 성명</label><input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="성명을 입력하세요" className="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold focus:ring-2 focus:ring-emerald-500" /></div>
-                                        <div className="space-y-2"><label className="text-xs font-black text-slate-400 ml-1">상담 및 지도 내용</label><textarea rows="8" name="content" value={formData.content} onChange={handleInputChange} placeholder="교육 및 상담 내용을 입력하세요..." className="w-full p-5 bg-slate-50 rounded-2xl outline-none resize-none leading-relaxed focus:ring-2 focus:ring-emerald-500"></textarea></div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-slate-400 ml-1">학생 성명</label>
+                                            <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="성명을 입력하세요" className="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold focus:ring-2 focus:ring-emerald-500" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-slate-400 ml-1">상담 및 지도 내용</label>
+                                            <textarea rows="8" name="content" value={formData.content} onChange={handleInputChange} placeholder="교육 및 상담 내용을 입력하세요..." className="w-full p-5 bg-slate-50 rounded-2xl outline-none resize-none leading-relaxed focus:ring-2 focus:ring-emerald-500"></textarea>
+                                        </div>
                                         <div className="flex gap-4 pt-4">
-                                            <button type="button" onClick={() => setView('list')} className="flex-1 py-5 bg-slate-100 text-slate-600 rounded-2xl font-bold">취소</button>
-                                            <button type="submit" className="flex-[2] py-5 bg-emerald-600 text-white rounded-2xl font-bold shadow-xl flex items-center justify-center gap-2"><Icon name="save" size={20} /> 상담 저장하기</button>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => {setView('list'); setEditingId(null);}} 
+                                                className="flex-1 py-5 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all"
+                                            >
+                                                취소
+                                            </button>
+                                            <button 
+                                                type="submit" 
+                                                className={`flex-[2] py-5 ${editingId ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white rounded-2xl font-bold shadow-xl flex items-center justify-center gap-2 transition-all`}
+                                            >
+                                                <Icon name="save" size={20} /> 
+                                                {editingId ? '수정 내용 저장' : '상담 저장하기'}
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -299,14 +390,25 @@
                             <div className="max-w-xl mx-auto no-print">
                                 <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-2 bg-slate-800"></div>
-                                    <h2 className="text-2xl font-black mb-8 flex items-center gap-3 text-slate-800"><div className="p-3 bg-slate-100 rounded-2xl"><Icon name="settings" size={24} /></div>앱 환경 설정</h2>
+                                    <h2 className="text-2xl font-black mb-8 flex items-center gap-3 text-slate-800">
+                                        <div className="p-3 bg-slate-100 rounded-2xl"><Icon name="settings" size={24} /></div>
+                                        앱 환경 설정
+                                    </h2>
                                     <form onSubmit={handleSchoolNameSave} className="space-y-8">
                                         <div className="space-y-3">
                                             <label className="text-xs font-black text-slate-400 ml-1 uppercase tracking-widest">학교 공식 명칭</label>
-                                            <input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-black text-xl text-emerald-900 focus:ring-2 focus:ring-emerald-500" placeholder="예: 순천부영초등학교" />
+                                            <input 
+                                                type="text" 
+                                                value={schoolName} 
+                                                onChange={(e) => setSchoolName(e.target.value)} 
+                                                className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-black text-xl text-emerald-900 focus:ring-2 focus:ring-emerald-500" 
+                                                placeholder="예: 순천부영초등학교" 
+                                            />
                                             <p className="text-xs text-slate-400 leading-relaxed font-medium">* 입력하신 학교 이름은 사이드바와 인쇄물 상단 등에 표시됩니다.</p>
                                         </div>
-                                        <button type="submit" className="w-full py-5 bg-slate-900 text-white rounded-2xl font-bold shadow-xl transition-all hover:bg-black flex items-center justify-center gap-2"><Icon name="save" size={20} /> 설정 저장하기</button>
+                                        <button type="submit" className="w-full py-5 bg-slate-900 text-white rounded-2xl font-bold shadow-xl transition-all hover:bg-black flex items-center justify-center gap-2">
+                                            <Icon name="save" size={20} /> 설정 저장하기
+                                        </button>
                                     </form>
                                 </div>
                             </div>
