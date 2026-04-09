@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식생활교육관 영양상담일지</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/font/lucide.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400;700;900&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        @media print {
+            .no-print { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; width: 100% !important; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
+            table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed; }
+            th, td { border: 1px solid #333 !important; padding: 10px !important; word-break: break-all; font-size: 11pt; }
+            th { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; }
+        }
+        .print-header { display: none; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Lucide 아이콘 컴포넌트 간소화 (CDN 버전용)
+        const Icon = ({ name, size = 20, className = "" }) => (
+            <i className={`lucide-${name} ${className}`} style={{ fontSize: size, fontStyle: 'normal', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: size, height: size }}></i>
+        );
+
+        const App = () => {
+            const [logs, setLogs] = useState([]);
+            const [view, setView] = useState('list');
+            const [schoolName, setSchoolName] = useState('순천부영초등학교');
+            const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+            const [formData, setFormData] = useState({
+                date: new Date().toISOString().split('T')[0],
+                gradeClass: '',
+                name: '',
+                content: ''
+            });
+            const [searchTerm, setSearchTerm] = useState('');
+
+            useEffect(() => {
+                const savedLogs = localStorage.getItem('nutrition_logs');
+                if (savedLogs) setLogs(JSON.parse(savedLogs));
+                const savedSchool = localStorage.getItem('school_name');
+                if (savedSchool) setSchoolName(savedSchool);
+            }, []);
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                setFormData(prev => ({ ...prev, [name]: value }));
+            };
+
+            const handleSchoolNameSave = (e) => {
+                e.preventDefault();
+                localStorage.setItem('school_name', schoolName);
+                alert('학교 이름이 저장되었습니다.');
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (!formData.name || !formData.content) {
+                    alert('이름과 상담 내용을 입력해주세요.');
+                    return;
+                }
+                const newLog = { ...formData, id: Date.now() };
+                const updatedLogs = [newLog, ...logs];
+                setLogs(updatedLogs);
+                localStorage.setItem('nutrition_logs', JSON.stringify(updatedLogs));
+                setFormData({ date: new Date().toISOString().split('T')[0], gradeClass: '', name: '', content: '' });
+                setView('list');
+                setIsSidebarOpen(false);
+            };
+
+            const deleteLog = (id) => {
+                if (window.confirm('정말 삭제하시겠습니까?')) {
+                    const updatedLogs = logs.filter(log => log.id !== id);
+                    setLogs(updatedLogs);
+                    localStorage.setItem('nutrition_logs', JSON.stringify(updatedLogs));
+                }
+            };
+
+            const exportToCSV = () => {
+                if (logs.length === 0) return alert('내보낼 데이터가 없습니다.');
+                const headers = ['일자', '학년/반', '이름', '내용'];
+                const csvRows = [
+                    headers.join(','),
+                    ...logs.map(log => `"${log.date}","${log.gradeClass}","${log.name}","${log.content.replace(/"/g, '""')}"`)
+                ];
+                const blob = new Blob(['\uFEFF' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${schoolName}_영양상담일지.csv`;
+                link.click();
+            };
+
+            const filteredLogs = logs.filter(log => 
+                log.name.includes(searchTerm) || log.content.includes(searchTerm) || log.gradeClass.includes(searchTerm)
+            );
+
+            return (
+                <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row text-slate-800">
+                    {/* 모바일 헤더 */}
+                    <div className="md:hidden flex items-center justify-between p-4 bg-emerald-700 text-white no-print shadow-md">
+                        <div className="flex items-center gap-3">
+                            <Icon name="school" />
+                            <div className="flex flex-col">
+                                <span className="font-black text-sm leading-none">식생활교육관</span>
+                                <span className="text-[10px] opacity-80 font-bold tracking-tight">{schoolName}</span>
+                            </div>
+                        </div>
+                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                            <Icon name={isSidebarOpen ? "x" : "menu"} size={24} />
+                        </button>
+                    </div>
+
+                    {/* 사이드바 */}
+                    <nav className={`fixed inset-0 z-50 md:relative md:flex w-full md:w-72 bg-emerald-800 text-white p-6 flex-col gap-8 shadow-2xl transition-transform duration-300 no-print ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+                        <div className="hidden md:flex flex-col gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-white p-2.5 rounded-2xl shadow-inner shrink-0 text-emerald-800">
+                                    <Icon name="school" size={28} />
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                    <h1 className="font-black text-xl leading-none tracking-tighter">식생활교육관</h1>
+                                    <p className="text-emerald-200 text-sm font-bold mt-1.5 truncate opacity-90">{schoolName}</p>
+                                </div>
+                            </div>
+                            <div className="h-px bg-emerald-700/50 w-full"></div>
+                        </div>
+
+                        <ul className="flex flex-col gap-3 mt-4 md:mt-0">
+                            <NavItem active={view === 'list'} onClick={() => {setView('list'); setIsSidebarOpen(false);}} icon="printer" label="상담일지 인쇄" />
+                            <NavItem active={view === 'add'} onClick={() => {setView('add'); setIsSidebarOpen(false);}} icon="plus-circle" label="신규 상담 기록" />
+                            <NavItem active={view === 'settings'} onClick={() => {setView('settings'); setIsSidebarOpen(false);}} icon="settings" label="명칭 및 환경 설정" />
+                        </ul>
+
+                        <div className="mt-auto pt-6 border-t border-emerald-700/50 space-y-4">
+                            <button onClick={exportToCSV} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-900/50 hover:bg-emerald-600 transition-colors text-sm font-medium border border-emerald-600/30 shadow-sm">
+                                <Icon name="file-down" size={18} /> CSV 내보내기
+                            </button>
+                        </div>
+                    </nav>
+
+                    <main className="flex-1 p-4 md:p-10 overflow-y-auto w-full">
+                        <div className="print-header">
+                            <h1 className="text-3xl font-bold mb-1">식생활교육관 영양교육 및 상담일지</h1>
+                            <p className="text-lg font-bold text-slate-700 mb-4">{schoolName}</p>
+                            <div className="flex justify-between border-b-2 border-slate-900 pb-2 mb-4">
+                                <p className="font-bold underline underline-offset-4 tracking-wider">작성자: 영양교사 (인)</p>
+                                <p className="text-sm">총 {filteredLogs.length}건 기록 (출력: {new Date().toLocaleDateString()})</p>
+                            </div>
+                        </div>
+
+                        {view === 'list' && (
+                            <div className="max-w-6xl mx-auto space-y-6">
+                                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 no-print">
+                                    <div><h2 className="text-3xl font-black text-slate-800 tracking-tight">상담일지 관리</h2><p className="text-slate-500 text-sm mt-1">{schoolName} 상담 현황</p></div>
+                                    <div className="flex flex-wrap gap-2">
+                                        <div className="relative flex-1 min-w-[200px]">
+                                            <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                            <input type="text" placeholder="이름, 학급 검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-11 pr-4 py-3 border border-slate-200 rounded-2xl w-full focus:ring-4 focus:ring-emerald-500/10 outline-none shadow-sm" />
+                                        </div>
+                                        <button onClick={() => window.print()} className="bg-slate-900 text-white px-6 py-3 rounded-2xl flex items-center gap-2 hover:bg-black font-bold shadow-lg transition-all"><Icon name="printer" size={18} /> 서류 인쇄</button>
+                                    </div>
+                                </header>
+                                <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left">
+                                            <thead className="bg-slate-50 border-b border-slate-100">
+                                                <tr>
+                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">상담일자</th>
+                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">대상학급</th>
+                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">성명</th>
+                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase">상담 및 지도 내용</th>
+                                                    <th className="p-5 text-center w-16 no-print"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-50">
+                                                {filteredLogs.map(log => (
+                                                    <tr key={log.id} className="hover:bg-emerald-50/20 transition-colors group">
+                                                        <td className="p-5 text-sm text-slate-500 align-top text-center">{log.date}</td>
+                                                        <td className="p-5 text-sm font-semibold text-slate-700 align-top text-center">{log.gradeClass}</td>
+                                                        <td className="p-5 text-sm font-black text-emerald-700 align-top text-center">{log.name}</td>
+                                                        <td className="p-5 text-sm text-slate-600 align-top whitespace-pre-wrap leading-relaxed">{log.content}</td>
+                                                        <td className="p-5 text-center align-top no-print">
+                                                            <button onClick={() => deleteLog(log.id)} className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-
