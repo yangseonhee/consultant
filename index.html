@@ -29,9 +29,15 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        // Lucide 아이콘 컴포넌트 간소화 (CDN 버전용)
         const Icon = ({ name, size = 20, className = "" }) => (
             <i className={`lucide-${name} ${className}`} style={{ fontSize: size, fontStyle: 'normal', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: size, height: size }}></i>
+        );
+
+        const NavItem = ({ active, onClick, icon, label }) => (
+            <li onClick={onClick} className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all ${active ? 'bg-emerald-600 text-white shadow-lg' : 'text-emerald-100 hover:bg-emerald-700/50'}`}>
+                <Icon name={icon} size={18} />
+                <span className="font-medium">{label}</span>
+            </li>
         );
 
         const App = () => {
@@ -108,88 +114,83 @@
 
             return (
                 <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row text-slate-800">
-                    {/* 모바일 헤더 */}
-                    <div className="md:hidden flex items-center justify-between p-4 bg-emerald-700 text-white no-print shadow-md">
+                    {/* 사이드바 및 레이아웃 생략 방지를 위한 전체 구조 유지 */}
+                    <nav className={`fixed inset-0 z-50 md:relative md:flex w-full md:w-72 bg-emerald-800 text-white p-6 flex-col gap-8 no-print ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} transition-transform`}>
                         <div className="flex items-center gap-3">
-                            <Icon name="school" />
-                            <div className="flex flex-col">
-                                <span className="font-black text-sm leading-none">식생활교육관</span>
-                                <span className="text-[10px] opacity-80 font-bold tracking-tight">{schoolName}</span>
+                            <Icon name="school" size={28} />
+                            <div>
+                                <h1 className="font-black text-xl leading-none">식생활교육관</h1>
+                                <p className="text-emerald-200 text-sm mt-1">{schoolName}</p>
                             </div>
                         </div>
-                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-                            <Icon name={isSidebarOpen ? "x" : "menu"} size={24} />
-                        </button>
-                    </div>
-
-                    {/* 사이드바 */}
-                    <nav className={`fixed inset-0 z-50 md:relative md:flex w-full md:w-72 bg-emerald-800 text-white p-6 flex-col gap-8 shadow-2xl transition-transform duration-300 no-print ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-                        <div className="hidden md:flex flex-col gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="bg-white p-2.5 rounded-2xl shadow-inner shrink-0 text-emerald-800">
-                                    <Icon name="school" size={28} />
-                                </div>
-                                <div className="flex flex-col min-w-0">
-                                    <h1 className="font-black text-xl leading-none tracking-tighter">식생활교육관</h1>
-                                    <p className="text-emerald-200 text-sm font-bold mt-1.5 truncate opacity-90">{schoolName}</p>
-                                </div>
-                            </div>
-                            <div className="h-px bg-emerald-700/50 w-full"></div>
-                        </div>
-
-                        <ul className="flex flex-col gap-3 mt-4 md:mt-0">
-                            <NavItem active={view === 'list'} onClick={() => {setView('list'); setIsSidebarOpen(false);}} icon="printer" label="상담일지 인쇄" />
-                            <NavItem active={view === 'add'} onClick={() => {setView('add'); setIsSidebarOpen(false);}} icon="plus-circle" label="신규 상담 기록" />
-                            <NavItem active={view === 'settings'} onClick={() => {setView('settings'); setIsSidebarOpen(false);}} icon="settings" label="명칭 및 환경 설정" />
+                        <ul className="flex flex-col gap-3 mt-4">
+                            <NavItem active={view === 'list'} onClick={() => setView('list')} icon="printer" label="상담일지 목록" />
+                            <NavItem active={view === 'add'} onClick={() => setView('add')} icon="plus-circle" label="신규 상담 기록" />
+                            <NavItem active={view === 'settings'} onClick={() => setView('settings')} icon="settings" label="환경 설정" />
                         </ul>
-
-                        <div className="mt-auto pt-6 border-t border-emerald-700/50 space-y-4">
-                            <button onClick={exportToCSV} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-900/50 hover:bg-emerald-600 transition-colors text-sm font-medium border border-emerald-600/30 shadow-sm">
-                                <Icon name="file-down" size={18} /> CSV 내보내기
-                            </button>
-                        </div>
+                        <button onClick={exportToCSV} className="mt-auto flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-900/50 hover:bg-emerald-600 transition-colors">
+                            <Icon name="file-down" size={18} /> CSV 내보내기
+                        </button>
                     </nav>
 
-                    <main className="flex-1 p-4 md:p-10 overflow-y-auto w-full">
-                        <div className="print-header">
-                            <h1 className="text-3xl font-bold mb-1">식생활교육관 영양교육 및 상담일지</h1>
-                            <p className="text-lg font-bold text-slate-700 mb-4">{schoolName}</p>
-                            <div className="flex justify-between border-b-2 border-slate-900 pb-2 mb-4">
-                                <p className="font-bold underline underline-offset-4 tracking-wider">작성자: 영양교사 (인)</p>
-                                <p className="text-sm">총 {filteredLogs.length}건 기록 (출력: {new Date().toLocaleDateString()})</p>
-                            </div>
-                        </div>
-
+                    <main className="flex-1 p-4 md:p-10 overflow-y-auto">
                         {view === 'list' && (
-                            <div className="max-w-6xl mx-auto space-y-6">
-                                <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 no-print">
-                                    <div><h2 className="text-3xl font-black text-slate-800 tracking-tight">상담일지 관리</h2><p className="text-slate-500 text-sm mt-1">{schoolName} 상담 현황</p></div>
-                                    <div className="flex flex-wrap gap-2">
-                                        <div className="relative flex-1 min-w-[200px]">
-                                            <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                            <input type="text" placeholder="이름, 학급 검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-11 pr-4 py-3 border border-slate-200 rounded-2xl w-full focus:ring-4 focus:ring-emerald-500/10 outline-none shadow-sm" />
-                                        </div>
-                                        <button onClick={() => window.print()} className="bg-slate-900 text-white px-6 py-3 rounded-2xl flex items-center gap-2 hover:bg-black font-bold shadow-lg transition-all"><Icon name="printer" size={18} /> 서류 인쇄</button>
-                                    </div>
+                            <div className="max-w-6xl mx-auto">
+                                <header className="flex justify-between items-center mb-6 no-print">
+                                    <h2 className="text-3xl font-black">상담일지 목록</h2>
+                                    <button onClick={() => window.print()} className="bg-slate-900 text-white px-6 py-3 rounded-2xl flex items-center gap-2 hover:bg-black font-bold">
+                                        <Icon name="printer" size={18} /> 인쇄
+                                    </button>
                                 </header>
-                                <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left">
-                                            <thead className="bg-slate-50 border-b border-slate-100">
-                                                <tr>
-                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">상담일자</th>
-                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">대상학급</th>
-                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase w-28 text-center">성명</th>
-                                                    <th className="p-5 font-bold text-slate-500 text-xs uppercase">상담 및 지도 내용</th>
-                                                    <th className="p-5 text-center w-16 no-print"></th>
+                                <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-slate-50 border-b">
+                                            <tr>
+                                                <th className="p-5 w-32">일자</th>
+                                                <th className="p-5 w-32">대상</th>
+                                                <th className="p-5 w-32">성명</th>
+                                                <th className="p-5">내용</th>
+                                                <th className="p-5 w-16 no-print"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y">
+                                            {filteredLogs.map(log => (
+                                                <tr key={log.id} className="hover:bg-slate-50 group">
+                                                    <td className="p-5 text-sm">{log.date}</td>
+                                                    <td className="p-5 text-sm font-bold">{log.gradeClass}</td>
+                                                    <td className="p-5 text-sm font-black text-emerald-700">{log.name}</td>
+                                                    <td className="p-5 text-sm leading-relaxed">{log.content}</td>
+                                                    <td className="p-5 no-print">
+                                                        <button onClick={() => deleteLog(log.id)} className="text-slate-300 hover:text-red-500">
+                                                            <Icon name="trash-2" size={18} />
+                                                        </button>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-50">
-                                                {filteredLogs.map(log => (
-                                                    <tr key={log.id} className="hover:bg-emerald-50/20 transition-colors group">
-                                                        <td className="p-5 text-sm text-slate-500 align-top text-center">{log.date}</td>
-                                                        <td className="p-5 text-sm font-semibold text-slate-700 align-top text-center">{log.gradeClass}</td>
-                                                        <td className="p-5 text-sm font-black text-emerald-700 align-top text-center">{log.name}</td>
-                                                        <td className="p-5 text-sm text-slate-600 align-top whitespace-pre-wrap leading-relaxed">{log.content}</td>
-                                                        <td className="p-5 text-center align-top no-print">
-                                                            <button onClick={() => deleteLog(log.id)} className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'add' && (
+                            <div className="max-w-2xl mx-auto">
+                                <h2 className="text-3xl font-black mb-8">신규 상담 기록</h2>
+                                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold mb-2">상담일자</label>
+                                            <input type="date" name="date" value={formData.date} onChange={handleInputChange} className="w-full p-4 border rounded-2xl outline-none focus:ring-4 focus:ring-emerald-500/10" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold mb-2">대상 학급</label>
+                                            <input type="text" name="gradeClass" value={formData.gradeClass} onChange={handleInputChange} placeholder="예: 2-1" className="w-full p-4 border rounded-2xl outline-none focus:ring-4 focus:ring-emerald-500/10" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold mb-2">학생 성명</label>
+                                        <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="w-full p-4 border rounded-2xl outline-none focus:ring-4 focus:ring-emerald-500/10" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold mb-2">상담 내용</label>
+                                        <textarea name="content" value={formData.content} onChange={handleInputChange} rows="5" className="
